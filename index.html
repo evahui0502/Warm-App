@@ -6,39 +6,160 @@
     <title>溫暖守護</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="溫暖守護">
+    <meta name="mobile-web-app-capable" content="yes">
     <link rel="apple-touch-icon" href="https://via.placeholder.com/180/AEDFF7/ffffff?text=🤝">
 
     <style>
-        :root { --sky-blue: #AEDFF7; --bg: #FFFDF5; --orange: #FFB74D; --mint: #B2DFDB; --text: #444; --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        :root { --sky-blue: #AEDFF7; --bg: #FFFDF5; --orange: #FFB74D; --mint: #B2DFDB; --text: #444; }
         
-        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; color: var(--text); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        body { font-family: "Microsoft JhengHei", -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; justify-content: center; min-height: 100vh; color: var(--text); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         
         .screen { 
             width: 100%; max-width: 400px; padding: 25px; box-sizing: border-box;
-            display: none; opacity: 0; transform: translateY(30px); transition: var(--transition);
+            display: none; flex-direction: column; align-items: center; opacity: 0; transform: translateY(20px); transition: all 0.4s ease;
         }
-        .screen.active { display: flex; flex-direction: column; align-items: center; opacity: 1; transform: translateY(0); }
+        .screen.active { display: flex; opacity: 1; transform: translateY(0); }
 
-        .app-icon { width: 85px; height: 85px; background: var(--sky-blue); border-radius: 25px; display: flex; justify-content: center; align-items: center; font-size: 45px; margin-top: 10px; box-shadow: 0 10px 20px rgba(174, 223, 247, 0.4); }
+        .app-icon { width: 85px; height: 85px; background: var(--sky-blue); border-radius: 25px; display: flex; justify-content: center; align-items: center; font-size: 45px; margin-top: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         
-        h1 { font-size: 28px; margin: 20px 0; text-align: center; line-height: 1.4; color: #333; }
+        h1 { font-size: 28px; margin: 20px 0; text-align: center; line-height: 1.4; }
         .sub-text { font-size: 19px; color: #777; margin-bottom: 25px; text-align: center; }
 
         .btn { 
             width: 100%; padding: 22px; font-size: 24px; font-weight: bold; border: none; border-radius: 22px; 
-            margin: 12px 0; cursor: pointer; transition: all 0.2s; box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            margin: 12px 0; cursor: pointer; transition: transform 0.1s; box-shadow: 0 6px 15px rgba(0,0,0,0.08);
         }
-        .btn:active { transform: scale(0.94); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn:active { transform: scale(0.95); }
         .btn-mint { background: var(--mint); color: #004D40; }
         .btn-orange { background: var(--orange); color: white; }
         .btn-outline { background: white; border: 3px solid var(--sky-blue); color: #555; }
-        .btn-sos { background: #FFAB91; color: #b71c1c; border: 2px solid #ff8a65; margin-top: 20px; font-size: 20px; }
+        .btn-sos { background: #FFAB91; color: #b71c1c; border: 2px solid #ff8a65; margin-top: 20px; }
 
-        .tip-card { background: white; border: 3px solid var(--sky-blue); padding: 25px; border-radius: 28px; margin: 15px 0; box-shadow: 0 10px 25px rgba(0,0,0,0.03); width: 100%; box-sizing: border-box; }
+        .tip-card { background: white; border: 3px solid var(--sky-blue); padding: 25px; border-radius: 28px; margin: 15px 0; width: 100%; box-sizing: border-box; }
         
         .display { font-size: 55px; background: #fff; width: 100%; padding: 20px 0; border-radius: 25px; border: 3px solid var(--sky-blue); margin-bottom: 20px; text-align: center; color: var(--orange); font-weight: bold; letter-spacing: 5px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; }
         .key { background: white; padding: 22px; font-size: 28px; border-radius: 18px; text-align: center; border: 1px solid #eee; box-shadow: 0 4px 0 #e0e0e0; }
-        .key:active { transform: translateY(4px); box-shadow: none; background: #f9f9f9; }
+        .key:active { transform: translateY(4px); box-shadow: none; }
+
+        .praise-icon { font-size: 100px; margin: 30px 0; animation: heartBeat 1.5s infinite; }
+        @keyframes heartBeat { 0%, 100% { transform: scale(1); } 14%, 42% { transform: scale(1.1); } 70% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div id="home" class="screen active">
+        <div class="app-icon">🤝</div>
+        <h1>早晨陳伯！<br>今日覺得點呀？</h1>
+        <button class="btn btn-mint" onclick="goCheckIn('good')">今日好好 ☀️</button>
+        <button class="btn btn-mint" style="background:#FFE0B2; color:#795548;" onclick="goCheckIn('normal')">有啲攰 ☁️</button>
+        <button class="btn btn-outline" style="margin-top:20px;" onclick="viewHistory()">📋 睇返舊紀錄</button>
+        <button class="btn btn-sos" onclick="triggerSOS()">🆘 搵仔仔幫幫手</button>
+    </div>
+
+    <div id="tip" class="screen">
+        <h1 id="tip-title">太好喇！</h1>
+        <div class="tip-card">
+            <div id="daily-tip" style="font-size: 22px; line-height: 1.6;"></div>
+        </div>
+        <p class="sub-text">乖，不如順便記埋血壓？</p>
+        <button class="btn btn-orange" onclick="showScreen('bp')">好，即刻記紀錄 📝</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:#bbb; font-size: 18px; margin-top: 20px;">遲啲先，返主頁</button>
+    </div>
+
+    <div id="bp" class="screen">
+        <h1 id="bp-label" style="color:var(--orange)">請輸入「高壓」</h1>
+        <div class="display" id="bp-val">---</div>
+        <div class="keypad" id="numeric-pad"></div>
+    </div>
+
+    <div id="finish" class="screen">
+        <div class="praise-icon">💝</div>
+        <h1 id="praise-msg" style="color:var(--orange);"></h1>
+        <p id="ending-msg" style="font-size: 22px; color: #666; text-align: center;"></p>
+        <button class="btn btn-mint" onclick="location.reload()" style="margin-top:50px; width:90%">返主頁休息</button>
+    </div>
+
+    <script>
+        function vibrate(ms = 50) { if (navigator.vibrate) navigator.vibrate(ms); }
+
+        const tips = [
+            "今日天氣轉涼，出門記得帶件外套呀！🧤",
+            "記得飲多兩杯暖水，對身體好啲。💧",
+            "起床唔好太急，喺床邊坐一陣先落床。🛌",
+            "仔仔話見到你每日有紀錄，佢好安心！👨‍👩‍👧"
+        ];
+        const praises = ["陳伯，你今日好叻呀！", "做得好！有乖乖照顧自己。", "紀錄已經傳送俾仔仔喇。"];
+
+        let bpStage = 1; let currentNum = ""; let systolic = "";
+
+        // 初始化鍵盤
+        const pad = document.getElementById('numeric-pad');
+        const keys = [1,2,3,4,5,6,7,8,9];
+        keys.forEach(k => { pad.innerHTML += `<div class="key" onclick="press(${k})">${k}</div>`; });
+        pad.innerHTML += `<div class="key" style="background:#FFEBEE; color:#C62828;" onclick="clearBP()">刪除</div>`;
+        pad.innerHTML += `<div class="key" onclick="press(0)">0</div>`;
+        pad.innerHTML += `<div class="key" style="background:var(--mint); color:#004D40;" onclick="confirmBP()">確定</div>`;
+
+        function showScreen(id) {
+            vibrate(30);
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            const next = document.getElementById(id);
+            next.style.display = 'flex';
+            setTimeout(() => next.classList.add('active'), 50);
+        }
+
+        // 連續簽到邏輯
+        function goCheckIn(status) {
+            const today = new Date().toLocaleDateString();
+            let data = JSON.parse(localStorage.getItem('warmAppCheckIn') || '{"lastDate":"","count":0}');
+            
+            if (data.lastDate !== today) {
+                data.count += 1;
+                data.lastDate = today;
+                localStorage.setItem('warmAppCheckIn', JSON.stringify(data));
+                vibrate([100, 50, 100]);
+            }
+
+            document.getElementById('tip-title').innerText = `第 ${data.count} 日見到你，${status === 'good' ? '好開心！' : '加油呀！'}`;
+            document.getElementById('daily-tip').innerText = tips[Math.floor(Math.random()*tips.length)];
+            showScreen('tip');
+        }
+
+        function triggerSOS() {
+            vibrate([200, 100, 200]);
+            if(confirm("係咪即刻打電話俾仔仔搵幫手？")) { window.location.href = "tel:98765432"; }
+        }
+
+        function press(n) { vibrate(20); if(currentNum.length < 3) { currentNum += n; document.getElementById('bp-val').innerText = currentNum; } }
+        function clearBP() { vibrate(40); currentNum = ""; document.getElementById('bp-val').innerText = "---"; }
+
+        function confirmBP() {
+            if(currentNum === "") return;
+            vibrate(60);
+            if(bpStage === 1) {
+                systolic = currentNum; bpStage = 2; currentNum = ""; 
+                document.getElementById('bp-label').innerText = "請輸入「低壓」";
+                document.getElementById('bp-val').innerText = "---";
+            } else {
+                const logs = JSON.parse(localStorage.getItem('bpLogs') || '[]');
+                logs.unshift({ date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString(), sys: systolic, dia: currentNum });
+                localStorage.setItem('bpLogs', JSON.stringify(logs));
+                
+                document.getElementById('praise-msg').innerText = praises[Math.floor(Math.random()*praises.length)];
+                document.getElementById('ending-msg').innerText = "今日健康紀錄已記好。祝你有個愉快嘅下午！";
+                showScreen('finish');
+            }
+        }
+
+        function viewHistory() {
+            const logs = JSON.parse(localStorage.getItem('bpLogs') || '[]');
+            if(logs.length === 0) return alert("暫時未有紀錄。");
+            alert(`最近紀錄：${logs[0].date}\n血壓：${logs[0].sys} / ${logs[0].dia}`);
+        }
+    </script>
+</body>
+</html>
