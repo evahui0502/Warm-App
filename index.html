@@ -20,56 +20,65 @@
         .active { display: flex; }
         
         .header-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .btn-settings-text { color: var(--primary-orange); font-weight: bold; font-size: 18px; border: 2px solid var(--primary-orange); padding: 5px 12px; border-radius: 12px; background: white; }
+        .btn-settings-text { color: var(--primary-orange); font-weight: bold; font-size: 20px; border: 2.5px solid var(--primary-orange); padding: 8px 18px; border-radius: 15px; background: white; cursor: pointer; }
 
-        .card { background: var(--card-white); border-radius: 24px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.06); margin-bottom: 20px; width: calc(100% - 50px); }
+        .card { background: var(--card-white); border-radius: 26px; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 20px; width: calc(100% - 50px); }
         
-        .ai-bubble { font-size: 30px; border-left: 8px solid var(--primary-orange); padding-left: 15px; margin-bottom: 12px; font-weight: 900; color: #333; line-height: 1.3; }
-        .last-record-box { background: #FFF9E6; padding: 10px 15px; border-radius: 12px; color: var(--primary-orange); font-weight: bold; font-size: 20px; border: 1px dashed var(--primary-orange); }
-        .streak-info { margin-top: 10px; font-size: 16px; color: #666; font-weight: bold; }
+        .ai-bubble { font-size: 32px; border-left: 10px solid var(--primary-orange); padding-left: 18px; margin-bottom: 15px; font-weight: 900; color: #333; line-height: 1.3; }
+        .last-record-box { background: #FFF9E6; padding: 12px 18px; border-radius: 15px; color: var(--primary-orange); font-weight: bold; font-size: 22px; border: 2px dashed var(--primary-orange); }
 
         .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .input-group { flex: 1; display: flex; flex-direction: column; }
-        input { font-size: 32px; padding: 15px; border-radius: 15px; border: 3px solid var(--accent-blue); text-align: center; width: 85%; align-self: center; }
+        .input-group label { font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #555; }
+        input { font-size: 34px; padding: 18px; border-radius: 18px; border: 3px solid var(--accent-blue); text-align: center; width: 85%; align-self: center; }
         
-        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 20px; border-radius: 18px; font-size: 24px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
-        .btn-wa-main { background: var(--wa-green) !important; }
-        .btn-report { background: white; border: 3px solid var(--primary-orange); color: var(--primary-orange); padding: 18px; border-radius: 15px; font-size: 20px; font-weight: bold; flex: 1; }
+        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 22px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .btn-wa-main { background: var(--wa-green) !important; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+        .btn-report { background: white; border: 3px solid var(--primary-orange); color: var(--primary-orange); padding: 20px; border-radius: 18px; font-size: 22px; font-weight: bold; flex: 1; cursor: pointer; }
 
-        .warning-text { color: var(--warn-red); font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none; text-align: center; background: #ffebee; padding: 10px; border-radius: 10px; }
+        .warning-text { color: var(--warn-red); font-weight: bold; font-size: 19px; margin-bottom: 15px; display: none; text-align: center; background: #ffebee; padding: 12px; border-radius: 12px; }
+
+        /* 紀錄成功的彈出訊息 */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 50px; padding: 16px; position: fixed; z-index: 2000; left: 50%; bottom: 150px; transform: translateX(-50%); font-size: 20px; font-weight: bold; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+
+        @keyframes fadein { from {bottom: 100px; opacity: 0;} to {bottom: 150px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 150px; opacity: 1;} to {bottom: 100px; opacity: 0;} }
+
+        #report-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 1000; justify-content: center; align-items: center; }
+        #report-content { background: white; width: 90%; max-width: 440px; padding: 25px; border-radius: 30px; }
         
-        /* 提醒設定樣式 */
-        .reminder-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 10px 0; border-top: 1px solid #eee; }
-        .toggle { position: relative; display: inline-block; width: 60px; height: 34px; }
-        .toggle input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--wa-green); }
-        input:checked + .slider:before { transform: translateX(26px); }
-
-        .sos-btn { position: fixed; bottom: 30px; right: 25px; width: 100px; height: 100px; background: var(--sos-red); border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 26px; font-weight: 900; z-index: 100; box-shadow: 0 10px 25px rgba(255,75,43,0.5); }
+        .sos-btn { position: fixed; bottom: 35px; right: 25px; width: 105px; height: 105px; background: var(--sos-red); border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 28px; font-weight: 900; z-index: 100; box-shadow: 0 10px 30px rgba(255,75,43,0.5); cursor: pointer; }
     </style>
 </head>
 <body>
 
+    <div id="toast">紀錄成功！做得好！💪</div>
+
     <div id="home-page" class="page active">
         <div class="header-row">
-            <h1 style="color: var(--primary-orange); margin: 0; font-size: 30px;">溫暖守護</h1>
-            <div class="btn-settings-text" onclick="showPage('settings-page')">⚙️ 習慣設定</div>
+            <h1 style="color: var(--primary-orange); margin: 0; font-size: 34px;">溫暖守護</h1>
+            <div class="btn-settings-text" onclick="showPage('settings-page')">⚙️ 設定中心</div>
         </div>
 
         <div class="card">
             <div id="ai-msg" class="ai-bubble">早晨呀！</div>
-            <div id="last-record-time" class="last-record-box">載入中...</div>
-            <div id="streak-msg" class="streak-info">🔥 已連續紀錄 0 天</div>
+            <div id="last-record-time" class="last-record-box">載入數據中...</div>
+            <div id="streak-msg" style="margin-top: 12px; font-size: 18px; color: #666; font-weight: bold;">🔥 已連續紀錄 0 天</div>
         </div>
 
         <div class="card">
             <div class="input-row">
-                <div class="input-group"><label>上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
-                <div class="input-group"><label>下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
+                <div class="input-group">
+                    <label>上壓 (收縮壓)</label>
+                    <input type="number" id="sys" placeholder="120" inputmode="numeric">
+                </div>
+                <div class="input-group">
+                    <label>下壓 (舒張壓)</label>
+                    <input type="number" id="dia" placeholder="80" inputmode="numeric">
+                </div>
             </div>
-            <div id="bp-warning" class="warning-text">⚠️ 數值偏高，請休息下再量。</div>
+            <div id="bp-warning" class="warning-text">⚠️ 數值偏高，請休息下再量一次。</div>
             <button class="btn-main" onclick="logBP()">✅ 記下數據</button>
             <button class="btn-main btn-wa-main" onclick="quickShareToday()">💬 即時回報今日數據</button>
         </div>
@@ -81,37 +90,32 @@
     </div>
 
     <div id="settings-page" class="page">
-        <div class="header-row"><h2 onclick="showPage('home-page')">⬅️ 返回</h2></div>
+        <div class="header-row">
+            <h2 style="margin:0; font-size:30px; cursor:pointer;" onclick="showPage('home-page')">⬅️ 返回主頁</h2>
+        </div>
         <div class="card">
-            <h3 style="color: var(--primary-orange); margin-top:0;">我的習慣設定</h3>
-            <label>您的稱呼</label>
-            <input type="text" id="u-name" style="width:90%; font-size:22px; margin-bottom:20px;">
+            <h3 style="color: var(--primary-orange); margin-top:0; font-size: 26px;">溫暖設定</h3>
             
-            <div class="reminder-row">
-                <span style="font-weight:bold; font-size:20px;">每日提醒我 Check-in</span>
-                <label class="toggle">
-                    <input type="checkbox" id="remind-switch" onchange="toggleReminder()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div id="time-picker" style="margin-top:10px; display:none;">
-                <label>提醒時間：</label>
-                <input type="time" id="remind-time" style="font-size:24px; padding:10px;">
-            </div>
+            <label style="display:block; margin-bottom:10px; font-weight:bold; font-size: 20px;">點樣稱呼您？</label>
+            <input type="text" id="u-name" style="width:90%; font-size:24px; margin-bottom:25px;" placeholder="例如：陳伯">
+            
+            <label style="display:block; margin-bottom:10px; font-weight:bold; font-size: 20px;">邊位係緊急聯絡人？</label>
+            <input type="text" id="e-contact-name" style="width:90%; font-size:24px; margin-bottom:25px;" placeholder="例如：大阿哥">
 
-            <hr style="margin:20px 0;">
-            <label>緊急聯絡電話</label>
-            <input type="tel" id="sos-tel" style="width:90%; font-size:22px;">
-            <button class="btn-main" style="background:#4CAF50; margin-top:20px;" onclick="saveSets()">💾 儲存</button>
+            <label style="display:block; margin-bottom:10px; font-weight:bold; font-size: 20px;">緊急求助電話</label>
+            <input type="tel" id="sos-tel" style="width:90%; font-size:24px; margin-bottom:25px;" placeholder="999">
+            
+            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存所有設定</button>
         </div>
     </div>
 
-    <div id="report-overlay" onclick="closeReport()">
-        <div id="report-content" onclick="event.stopPropagation()">
-            <h3 id="report-title" style="text-align:center;">健康趨勢</h3>
+    <div id="report-overlay">
+        <div id="report-content">
+            <h3 id="report-title" style="text-align:center; font-size:28px; color: var(--primary-orange); margin-top:0;">健康報告</h3>
             <canvas id="bpChart"></canvas>
-            <div id="report-text" style="font-size:16px; background:#f9f9f9; padding:15px; margin-top:15px; border-radius:12px;"></div>
-            <button id="share-pdf-btn" class="btn-main btn-wa-main" style="margin-top:20px;">📄 一鍵發送 PDF</button>
+            <div id="report-text" style="font-size:18px; background:#f9f9f9; padding:18px; margin-top:20px; border-radius:15px; line-height: 1.5;"></div>
+            <button id="share-pdf-btn" class="btn-main btn-wa-main" style="margin-top:25px;">📄 一鍵發送 PDF 報告</button>
+            <button class="btn-main" style="background:#888" onclick="closeReport()">關閉</button>
         </div>
     </div>
 
@@ -120,56 +124,67 @@
     <script>
         let myChart = null;
 
+        function showToast() {
+            const t = document.getElementById("toast");
+            t.className = "show";
+            setTimeout(() => { t.className = t.className.replace("show", ""); }, 3000);
+        }
+
         function formatFriendly(ts) {
             const d = new Date(ts);
             const now = new Date();
             const diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / 86400000);
             const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return diff === 0 ? `今日 ${time}` : diff === 1 ? `尋日 ${time}` : `${d.getMonth()+1}/${d.getDate()} ${time}`;
+            if (diff === 0) return `今日 ${time}`;
+            if (diff === 1) return `尋日 ${time}`;
+            return `${d.getMonth()+1}月${d.getDate()}日 ${time}`;
         }
 
         function showPage(p) { 
             document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
             document.getElementById(p).classList.add('active'); 
             if(p==='settings-page') loadSets(); 
+            updateStats();
         }
 
         function saveSets() { 
-            const s = {
+            localStorage.setItem('warm_sets', JSON.stringify({
                 name: document.getElementById('u-name').value, 
-                tel: document.getElementById('sos-tel').value,
-                remindOn: document.getElementById('remind-switch').checked,
-                remindTime: document.getElementById('remind-time').value
-            };
-            localStorage.setItem('warm_sets', JSON.stringify(s)); 
-            if(s.remindOn) checkNotificationPermission();
-            alert("設定已更新！"); 
-            showPage('home-page'); 
-            updateStats();
+                eName: document.getElementById('e-contact-name').value,
+                tel: document.getElementById('sos-tel').value
+            })); 
+            showToast(); // 借用 Toast 提示儲存成功
+            setTimeout(() => showPage('home-page'), 1000);
         }
 
         function loadSets() { 
             let s = JSON.parse(localStorage.getItem('warm_sets') || '{}'); 
             document.getElementById('u-name').value = s.name || ''; 
-            document.getElementById('sos-tel').value = s.tel || '999';
-            document.getElementById('remind-switch').checked = s.remindOn || false;
-            document.getElementById('remind-time').value = s.remindTime || "09:00";
-            document.getElementById('time-picker').style.display = s.remindOn ? 'block' : 'none';
-        }
-
-        function toggleReminder() {
-            document.getElementById('time-picker').style.display = document.getElementById('remind-switch').checked ? 'block' : 'none';
+            document.getElementById('e-contact-name').value = s.eName || '';
+            document.getElementById('sos-tel').value = s.tel || '999'; 
         }
 
         function logBP() {
             const sys = parseInt(document.getElementById('sys').value);
             const dia = parseInt(document.getElementById('dia').value);
-            if(!sys || !dia) return alert("請輸入數據");
-            document.getElementById('bp-warning').style.display = (sys >= 140 || dia >= 90) ? 'block' : 'none';
+            const warn = document.getElementById('bp-warning');
+            
+            if(!sys || !dia) return alert("請先填好血壓數值呀！");
+
+            if(sys >= 140 || dia >= 90) {
+                warn.style.display = 'block';
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            } else {
+                warn.style.display = 'none';
+            }
+
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             logs.push({sys: sys, dia: dia, d: Date.now()});
             localStorage.setItem('warm_logs', JSON.stringify(logs));
-            document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
+            
+            showToast();
+            document.getElementById('sys').value = ''; 
+            document.getElementById('dia').value = '';
             updateStats();
         }
 
@@ -177,18 +192,16 @@
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
             
-            // 計算連續紀錄天數 (Streak)
+            // 計算 Streak
             let streak = 0;
             if(logs.length > 0) {
-                let dates = logs.map(l => new Date(l.d).toDateString());
-                let uniqueDates = [...new Set(dates)].reverse();
+                let uniqueDates = [...new Set(logs.map(l => new Date(l.d).toDateString()))].reverse();
                 let today = new Date().toDateString();
-                let lastDate = uniqueDates[0];
-                
-                if(lastDate === today || lastDate === new Date(Date.now()-86400000).toDateString()) {
-                    for(let i=0; i<uniqueDates.length; i++) {
-                        let expected = new Date(new Date(lastDate) - i*86400000).toDateString();
-                        if(uniqueDates[i] === expected) streak++; else break;
+                let yesterday = new Date(Date.now() - 86400000).toDateString();
+                if (uniqueDates[0] === today || uniqueDates[0] === yesterday) {
+                    for(let i=0; i<uniqueDates.length; i++){
+                        let check = new Date(new Date(uniqueDates[0]) - i*86400000).toDateString();
+                        if(uniqueDates[i] === check) streak++; else break;
                     }
                 }
             }
@@ -196,7 +209,7 @@
 
             const last = logs[logs.length-1];
             if(last) {
-                document.getElementById('last-record-time').innerText = `最後紀錄：${formatFriendly(last.d)} (${last.sys}/${last.dia})`;
+                document.getElementById('last-record-time').innerText = `最後：${formatFriendly(last.d)} (血壓 ${last.sys}/${last.dia})`;
                 document.getElementById('ai-msg').innerText = `記低咗喇${s.name || ''}！`;
             } else {
                 document.getElementById('last-record-time').innerText = "尚未有紀錄";
@@ -204,48 +217,34 @@
             }
         }
 
-        // 溫和提醒邏輯
-        function checkNotificationPermission() {
-            if ("Notification" in window) {
-                Notification.requestPermission();
-            }
-        }
-
-        setInterval(() => {
-            let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            if(s.remindOn && s.remindTime) {
-                let now = new Date();
-                let currentTime = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-                if(currentTime === s.remindTime && now.getSeconds() < 10) {
-                    let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-                    let last = logs[logs.length-1];
-                    if(!last || new Date(last.d).toDateString() !== now.toDateString()) {
-                        new Notification("溫暖守護提醒您", {
-                            body: `早晨${s.name || ''}！量咗血壓未呀？記得照顧好自己呀 ❤️`,
-                            icon: "https://cdn-icons-png.flaticon.com/512/822/822102.png"
-                        });
-                    }
-                }
-            }
-        }, 10000);
-
         function quickShareToday() {
             const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
             const last = logs[logs.length-1];
-            if(!last) return;
-            const msg = `【溫暖守護】今日回報\n${s.name || '長輩'} 最新血壓：${last.sys}/${last.dia}\n時間：${formatFriendly(last.d)}\n身體感覺良好！`;
+            if(!last) return alert("仲未有紀錄喎");
+            const msg = `【溫暖守護】今日回報\n${s.name || '長輩'} 最新血壓：${last.sys}/${last.dia}\n時間：${formatFriendly(last.d)}\n身體感覺良好，大家放心！`;
             window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
         }
 
         function openReport(days) {
             const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const filtered = logs.filter(l => l.d > Date.now() - days*86400000);
-            if(filtered.length === 0) return alert("未有數據");
+            if(filtered.length === 0) return alert("未有數據呀");
             document.getElementById('report-overlay').style.display = 'flex';
             const ctx = document.getElementById('bpChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'line', data: { labels: filtered.map(l => new Date(l.d).getDate() + '日'), datasets: [{label:'上壓', data: filtered.map(l=>l.sys), borderColor:'red'}, {label:'下壓', data: filtered.map(l=>l.dia), borderColor:'blue'}] }});
+            myChart = new Chart(ctx, { 
+                type: 'line', 
+                data: { 
+                    labels: filtered.map(l => new Date(l.d).getDate() + '日'), 
+                    datasets: [
+                        {label:'上壓', data: filtered.map(l=>l.sys), borderColor:'#FF4B2B', backgroundColor:'rgba(255,75,43,0.1)', fill: true, tension: 0.3}, 
+                        {label:'下壓', data: filtered.map(l=>l.dia), borderColor:'#2196F3', backgroundColor:'rgba(33,150,243,0.1)', fill: true, tension: 0.3}
+                    ] 
+                },
+                options: { plugins: { legend: { labels: { font: { size: 16 } } } } }
+            });
+            document.getElementById('report-text').innerText = "最近 3 次數據：\n" + filtered.slice(-3).map(l => `${formatFriendly(l.d)}: ${l.sys}/${l.dia}`).join('\n');
             document.getElementById('share-pdf-btn').onclick = () => sharePDF();
         }
 
@@ -254,18 +253,22 @@
             const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
             const opt = { margin: 10, filename: 'report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } };
             const pdfBlob = await html2pdf().from(element).set(opt).output('blob');
-            const file = new File([pdfBlob], `健康報告.pdf`, { type: 'application/pdf' });
+            const file = new File([pdfBlob], `健康報告_${s.name || '我'}.pdf`, { type: 'application/pdf' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], title: '健康報告', text: `${s.name || '長輩'} 的趨勢圖。` });
+                await navigator.share({ files: [file], title: '健康報告', text: `${s.name || '長輩'} 的健康報告送上。` });
+            } else {
+                html2pdf().from(element).save();
             }
         }
 
         function triggerSOS() {
             let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            if(confirm("確定撥打電話？")) window.location.href = `tel:${s.tel || '999'}`;
+            let msg = s.eName ? `準備聯絡緊急聯絡人 (${s.eName}) 嗎？` : "確定撥打緊急電話？";
+            if(confirm(msg)) window.location.href = `tel:${s.tel || '999'}`;
         }
 
         function closeReport() { document.getElementById('report-overlay').style.display = 'none'; }
+        
         loadSets();
         updateStats();
     </script>
