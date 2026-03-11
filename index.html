@@ -57,3 +57,120 @@
             <div id="ai-msg" class="ai-bubble">早晨呀！</div>
             <div id="last-record" style="color: var(--primary-orange); font-weight: bold; font-size: 20px;">載入中...</div>
         </div>
+
+        <div class="card" style="text-align: center;">
+            <div style="display:flex; justify-content: space-around;">
+                <div><label>上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
+                <div><label>下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
+            </div>
+            <button class="btn-main" onclick="logBP()">✅ 記下數據</button>
+            <button class="btn-main btn-wa-main" onclick="quickShareToday()">💬 回報平安</button>
+        </div>
+    </div>
+
+    <div id="settings-page" class="page">
+        <div class="card">
+            <h2 onclick="showPage('home-page')" style="cursor: pointer;">⬅️ 返回</h2>
+            <p>您的稱呼：<br><input type="text" id="u-name" style="width:90%;"></p>
+            <p>家人 WhatsApp：<br><input type="tel" id="family-tel" style="width:90%;"></p>
+            <p>提醒時間：<br><input type="time" id="deadline-time" style="width:90%;"></p>
+            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存</button>
+        </div>
+    </div>
+
+    <script>
+        let timer = null;
+        let isAlerting = false;
+
+        function showPage(p) { 
+            document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
+            document.getElementById(p).classList.add('active'); 
+            updateStats();
+        }
+
+        function saveSets() { 
+            localStorage.setItem('warm_sets', JSON.stringify({
+                name: document.getElementById('u-name').value, 
+                familyTel: document.getElementById('family-tel').value,
+                deadline: document.getElementById('deadline-time').value
+            })); 
+            showPage('home-page'); 
+        }
+
+        function logBP() {
+            const s = document.getElementById('sys').value, d = document.getElementById('dia').value;
+            if(!s || !d) return alert("請輸入數值");
+            let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            logs.push({sys: s, dia: d, d: Date.now()});
+            localStorage.setItem('warm_logs', JSON.stringify(logs));
+            document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
+            alert("記好喇！❤️");
+            stopSafetyAlert();
+            updateStats();
+        }
+
+        function updateStats() {
+            let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            let today = new Date().toDateString();
+            let hasToday = logs.some(l => new Date(l.d).toDateString() === today);
+            
+            if (!hasToday && !isAlerting) {
+                let now = new Date();
+                let cur = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+                if (cur >= (s.deadline || "12:00")) startSafetyAlert();
+            }
+
+            const last = logs[logs.length-1];
+            document.getElementById('last-record').innerText = last ? `上次：${last.sys}/${last.dia}` : "尚未紀錄";
+            document.getElementById('ai-msg').innerText = hasToday ? `做得好，${s.name || ''}！` : `早晨，${s.name || ''}！`;
+        }
+
+        function startSafetyAlert() {
+            isAlerting = true;
+            document.getElementById('safety-overlay').style.display = 'flex';
+            let sec = 5;
+            timer = setInterval(() => {
+                sec--;
+                document.getElementById('timer-num').innerText = sec;
+                if (sec <= 0) {
+                    clearInterval(timer);
+                    sendWA();
+                }
+            }, 1000);
+        }
+
+        function stopSafetyAlert() {
+            isAlerting = false;
+            clearInterval(timer);
+            document.getElementById('safety-overlay').style.display = 'none';
+            document.getElementById('timer-num').innerText = "5";
+        }
+
+        function sendWA() {
+            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            // 精簡後的訊息
+            const msg = `今日${s.name || '長輩'}忙緊，遲啲量，放心！❤️`;
+            window.open(`https://wa.me/${s.familyTel || ''}?text=${encodeURIComponent(msg)}`);
+            stopSafetyAlert();
+        }
+
+        function quickShareToday() {
+            const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            const last = logs[logs.length-1];
+            if(!last) return;
+            const msg = `${s.name || '長輩'}今日血壓：${last.sys}/${last.dia}，放心！`;
+            window.open(`https://wa.me/${s.familyTel || ''}?text=${encodeURIComponent(msg)}`);
+        }
+
+        // 初始化
+        let saved = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+        document.getElementById('u-name').value = saved.name || '';
+        document.getElementById('family-tel').value = saved.familyTel || '';
+        document.getElementById('deadline-time').value = saved.deadline || '12:00';
+        updateStats();
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html>
