@@ -8,6 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#FF8C00">
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -16,102 +17,122 @@
         .page { display: none; width: 100%; max-width: 480px; flex-direction: column; }
         .active { display: flex; }
         
-        /* 勳章與狀態樣式 */
-        .streak-badge { background: linear-gradient(135deg, var(--gold), #FFA500); color: #8B4513; padding: 8px 15px; border-radius: 50px; font-weight: 900; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(255,215,0,0.3); }
-        .health-status { font-size: 20px; font-weight: bold; margin-top: 10px; padding: 8px 15px; border-radius: 12px; display: inline-block; }
-        .status-normal { background: #E8F5E9; color: #2E7D32; border: 1px solid #2E7D32; }
-        .status-warn { background: #FFEBEE; color: #C62828; border: 1px solid #C62828; animation: blink 1.5s infinite; }
+        /* 勳章與狀態 */
+        .streak-badge { background: linear-gradient(135deg, var(--gold), #FFA500); color: #8B4513; padding: 10px 20px; border-radius: 50px; font-weight: 900; font-size: 20px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(255,215,0,0.3); }
+        .health-status { font-size: 22px; font-weight: bold; margin-top: 10px; padding: 10px 15px; border-radius: 12px; display: inline-block; }
+        .status-normal { background: #E8F5E9; color: #2E7D32; border: 2px solid #2E7D32; }
+        .status-warn { background: #FFEBEE; color: #C62828; border: 2px solid #C62828; animation: blink 1.5s infinite; }
         @keyframes blink { 0% {opacity: 1;} 50% {opacity: 0.7;} 100% {opacity: 1;} }
 
-        .card { background: var(--card-white); border-radius: 26px; padding: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 15px; width: calc(100% - 44px); position: relative; }
-        .ai-bubble { font-size: 30px; border-left: 10px solid var(--primary-orange); padding-left: 15px; margin-bottom: 5px; font-weight: 900; color: #333; line-height: 1.2; }
+        .card { background: var(--card-white); border-radius: 26px; padding: 25px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 15px; width: calc(100% - 50px); }
+        .ai-bubble { font-size: 34px; border-left: 10px solid var(--primary-orange); padding-left: 15px; margin-bottom: 5px; font-weight: 900; color: #333; }
         
-        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 20px; border-radius: 20px; font-size: 24px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
+        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 22px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
         .btn-wa-main { background: var(--wa-green) !important; }
-        .btn-outline { background: white; border: 2.5px solid var(--primary-orange); color: var(--primary-orange); padding: 15px; border-radius: 15px; font-size: 18px; font-weight: bold; flex: 1; cursor: pointer; }
+        .btn-outline { background: white; border: 3px solid var(--primary-orange); color: var(--primary-orange); padding: 18px; border-radius: 15px; font-size: 20px; font-weight: bold; flex: 1; cursor: pointer; }
 
-        #safety-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #FFFDD0; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 25px; }
-        input { font-size: 32px; padding: 15px; border-radius: 15px; border: 3px solid var(--accent-blue); text-align: center; width: 42%; margin-bottom: 10px; }
+        input { font-size: 34px; padding: 15px; border-radius: 15px; border: 3px solid var(--accent-blue); text-align: center; width: 42%; margin-bottom: 10px; }
+        
+        /* 彈窗與覆蓋層 */
+        #safety-overlay, #chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; flex-direction: column; justify-content: center; align-items: center; background: #FFFDD0; padding: 20px; text-align: center; }
+        #chart-modal { background: rgba(0,0,0,0.85); }
+        .modal-content { background: white; width: 90%; padding: 20px; border-radius: 25px; }
     </style>
 </head>
 <body>
 
     <div id="safety-overlay">
-        <div style="font-size:26px; font-weight:bold; margin-bottom:20px;">忙緊嗎？❤️<br>我幫您同家人報平安...</div>
-        <div id="timer-num" style="font-size:60px; font-weight:900; color:var(--wa-green); margin-bottom:30px;">5</div>
-        <button onclick="stopSafetyAlert()" style="padding:15px 30px; border-radius:15px; font-size:20px; font-weight:bold; border:none; background:#ccc; color:white;">等陣先</button>
+        <div style="font-size:30px; font-weight:bold; margin-bottom:20px;">忙緊嗎？❤️<br>我幫您同家人報平安...</div>
+        <div id="timer-num" style="font-size:70px; font-weight:900; color:var(--wa-green); margin-bottom:30px;">5</div>
+        <button class="btn-main" style="background:#666;" onclick="stopSafetyAlert()">等陣，我而家量</button>
+    </div>
+
+    <div id="chart-modal">
+        <div class="modal-content">
+            <h3 id="chart-title" style="color:var(--primary-orange); font-size:24px;">趨勢報告</h3>
+            <canvas id="healthChart"></canvas>
+            <button class="btn-main" style="margin-top:20px; background:#666;" onclick="closeChart()">關閉</button>
+        </div>
     </div>
 
     <div id="home-page" class="page active">
         <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h1 style="color: var(--primary-orange); margin: 0; font-size: 30px;">溫暖守護</h1>
-            <div style="color: var(--primary-orange); font-weight: bold; border: 2px solid; padding: 6px 12px; border-radius: 10px; cursor: pointer;" onclick="showPage('settings-page')">⚙️ 設定</div>
+            <h1 style="color: var(--primary-orange); margin: 0; font-size: 34px;">溫暖守護</h1>
+            <div style="color: var(--primary-orange); font-weight: bold; border: 2px solid; padding: 8px 15px; border-radius: 12px; cursor: pointer;" onclick="showPage('settings-page')">⚙️ 設定</div>
         </div>
 
         <div class="card">
-            <div id="streak-box" class="streak-badge">
-                <span>🔥 連續紀錄 0 天</span>
-            </div>
-            
+            <div id="streak-box" class="streak-badge">🔥 連續紀錄 0 天</div>
             <div id="ai-msg" class="ai-bubble">早晨呀！</div>
-            
-            <div id="health-tip" class="health-status">載入中...</div>
-            <br>
-            <div id="last-record" style="margin-top:10px; font-size:18px; color:#666; font-weight:bold;">上次：--/--</div>
+            <div id="health-tip" class="health-status">請開始紀錄數據</div>
+            <div id="last-record" style="margin-top:15px; font-size:20px; color:#777; font-weight:bold;">上次：--/--</div>
         </div>
 
         <div class="card" style="text-align: center;">
-            <div style="display:flex; justify-content: space-around; margin-bottom: 5px;">
-                <div><label style="display:block; font-weight:bold; color:#666;">上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
-                <div><label style="display:block; font-weight:bold; color:#666;">下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
+            <div style="display:flex; justify-content: space-around; margin-bottom: 10px;">
+                <div><label style="display:block; font-weight:bold;">上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
+                <div><label style="display:block; font-weight:bold;">下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
             </div>
             <button class="btn-main" onclick="logBP()">✅ 記下數據</button>
             <button class="btn-main btn-wa-main" onclick="quickShareToday()">💬 報平安</button>
         </div>
 
-        <div style="display:flex; gap:12px; width:100%;">
-            <button class="btn-outline" onclick="alert('圖表生成中...')">📊 一週圖表</button>
-            <button class="btn-outline" onclick="alert('月報生成中...')">📅 月報預覽</button>
+        <div style="display:flex; gap:15px; width:100%;">
+            <button class="btn-outline" onclick="openChart(7)">📊 一週圖表</button>
+            <button class="btn-outline" onclick="openChart(30)">📅 月報預覽</button>
         </div>
     </div>
 
     <div id="settings-page" class="page">
         <div class="card">
-            <h2 onclick="showPage('home-page')" style="cursor: pointer; color: var(--primary-orange);">⬅️ 返回主頁</h2>
+            <h2 onclick="showPage('home-page')" style="cursor: pointer; color: var(--primary-orange);">⬅️ 返回</h2>
             <hr>
-            <p>您的稱呼：<input type="text" id="u-name" style="width:100%;"></p>
-            <p>家人 WhatsApp：<input type="tel" id="family-tel" style="width:100%;"></p>
-            <p>提醒時間：<input type="time" id="deadline-time" style="width:100%;"></p>
-            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存</button>
+            <p>您的稱呼：<input type="text" id="u-name" style="width:90%;"></p>
+            <p>家人電話：<input type="tel" id="family-tel" style="width:90%;"></p>
+            <p>提醒時間：<input type="time" id="deadline-time" style="width:90%;"></p>
+            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存設定</button>
         </div>
     </div>
 
     <script>
-        let countdownTimer = null;
+        let myChart = null;
+        let timer = null;
         let isAlerting = false;
+
+        // --- 核心工具：讀取數據 ---
+        function getSets() { return JSON.parse(localStorage.getItem('warm_sets') || '{"name":"","familyTel":"","deadline":"12:00"}'); }
+        function getLogs() { return JSON.parse(localStorage.getItem('warm_logs') || '[]'); }
 
         function showPage(p) {
             document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
             document.getElementById(p).classList.add('active');
+            if(p === 'settings-page') {
+                const s = getSets();
+                document.getElementById('u-name').value = s.name;
+                document.getElementById('family-tel').value = s.familyTel;
+                document.getElementById('deadline-time').value = s.deadline;
+            }
             updateStats();
         }
 
         function saveSets() {
-            localStorage.setItem('warm_sets', JSON.stringify({
+            const s = {
                 name: document.getElementById('u-name').value,
                 familyTel: document.getElementById('family-tel').value,
                 deadline: document.getElementById('deadline-time').value
-            }));
+            };
+            localStorage.setItem('warm_sets', JSON.stringify(s));
+            alert("已儲存！");
             showPage('home-page');
         }
 
         function logBP() {
-            const sys = parseInt(document.getElementById('sys').value);
-            const dia = parseInt(document.getElementById('dia').value);
-            if(!sys || !dia) return alert("請輸入數值");
+            const s = parseInt(document.getElementById('sys').value);
+            const d = parseInt(document.getElementById('dia').value);
+            if(!s || !d) return alert("請輸入數字");
             
-            let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            logs.push({sys: sys, dia: dia, d: Date.now()});
+            let logs = getLogs();
+            logs.push({ sys: s, dia: d, d: Date.now() });
             localStorage.setItem('warm_logs', JSON.stringify(logs));
             
             document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
@@ -120,43 +141,28 @@
             updateStats();
         }
 
-        function calculateStreak(logs) {
-            if (logs.length === 0) return 0;
-            let streak = 0;
-            let today = new Date();
-            today.setHours(0,0,0,0);
-            
-            let dateSet = new Set(logs.map(l => {
-                let d = new Date(l.d);
-                d.setHours(0,0,0,0);
-                return d.getTime();
-            }));
-
-            let checkDate = today;
-            while(dateSet.has(checkDate.getTime())) {
-                streak++;
-                checkDate.setDate(checkDate.getDate() - 1);
-            }
-            return streak;
-        }
-
         function updateStats() {
-            let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            let s = JSON.parse(localStorage.getItem('warm_sets') || '{"name":"","deadline":"12:00"}');
-            let todayStr = new Date().toDateString();
-            let hasToday = logs.some(l => new Date(l.d).toDateString() === todayStr);
-            
-            // 1. 更新連續天數
-            const streak = calculateStreak(logs);
-            document.getElementById('streak-box').innerHTML = `<span>🔥 連續紀錄 ${streak} 天</span>`;
-            if(streak >= 7) document.getElementById('streak-box').style.background = "linear-gradient(135deg, #FFD700, #FF4500)";
+            const logs = getLogs();
+            const s = getSets();
+            const todayStr = new Date().toDateString();
+            const hasToday = logs.some(l => new Date(l.d).toDateString() === todayStr);
 
-            // 2. 更新健康提示與數據
+            // 1. 連續天數 (簡單計算法)
+            let streak = 0;
+            let check = new Date();
+            const dates = new Set(logs.map(l => new Date(l.d).toDateString()));
+            while(dates.has(check.toDateString())) {
+                streak++;
+                check.setDate(check.getDate() - 1);
+            }
+            document.getElementById('streak-box').innerText = `🔥 連續紀錄 ${streak} 天`;
+
+            // 2. 健康狀態與上次數據
             const last = logs[logs.length-1];
             const tipEl = document.getElementById('health-tip');
-            if (last) {
+            if(last) {
                 document.getElementById('last-record').innerText = `上次：${last.sys}/${last.dia}`;
-                if (last.sys > 140 || last.dia > 90) {
+                if(last.sys > 140 || last.dia > 90) {
                     tipEl.innerText = "⚠️ 血壓偏高，休息下再量呀";
                     tipEl.className = "health-status status-warn";
                 } else {
@@ -164,3 +170,77 @@
                     tipEl.className = "health-status status-normal";
                 }
             }
+
+            // 3. 自動提醒
+            if(!hasToday && !isAlerting && !sessionStorage.getItem('skip_alert')) {
+                const now = new Date();
+                const cur = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+                if(cur >= s.deadline) startSafetyAlert();
+            }
+            document.getElementById('ai-msg').innerText = hasToday ? `做得好，${s.name}！` : `早晨，${s.name}！`;
+        }
+
+        function startSafetyAlert() {
+            isAlerting = true;
+            document.getElementById('safety-overlay').style.display = 'flex';
+            let sec = 5;
+            timer = setInterval(() => {
+                sec--;
+                document.getElementById('timer-num').innerText = sec;
+                if(sec <= 0) {
+                    clearInterval(timer);
+                    executeWA();
+                }
+            }, 1000);
+        }
+
+        function stopSafetyAlert() {
+            isAlerting = false;
+            clearInterval(timer);
+            document.getElementById('safety-overlay').style.display = 'none';
+            sessionStorage.setItem('skip_alert', 'true');
+        }
+
+        function executeWA() {
+            const s = getSets();
+            window.open(`https://wa.me/${s.familyTel}?text=${encodeURIComponent("今日"+s.name+"忙緊，遲啲量，放心！❤️")}`);
+            stopSafetyAlert();
+        }
+
+        function quickShareToday() {
+            const logs = getLogs();
+            const s = getSets();
+            const last = logs[logs.length-1];
+            if(!last) return alert("未有數據");
+            window.open(`https://wa.me/${s.familyTel}?text=${encodeURIComponent(s.name+"血壓："+last.sys+"/"+last.dia+"，放心！")}`);
+        }
+
+        // --- 圖表修復 ---
+        function openChart(days) {
+            const logs = getLogs();
+            const cutoff = Date.now() - (days * 86400000);
+            const data = logs.filter(l => l.d >= cutoff);
+            if(data.length === 0) return alert("未有數據");
+
+            document.getElementById('chart-modal').style.display = 'flex';
+            const ctx = document.getElementById('healthChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(l => new Date(l.d).toLocaleDateString('zh-HK', {month:'numeric', day:'numeric'})),
+                    datasets: [
+                        { label: '上壓', data: data.map(l => l.sys), borderColor: '#FF4B2B' },
+                        { label: '下壓', data: data.map(l => l.dia), borderColor: '#87CEEB' }
+                    ]
+                }
+            });
+        }
+        function closeChart() { document.getElementById('chart-modal').style.display = 'none'; }
+
+        // 啟動
+        updateStats();
+        setInterval(updateStats, 30000);
+    </script>
+</body>
+</html>
