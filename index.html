@@ -20,21 +20,24 @@
         /* 溫和提醒覆蓋層 */
         #safety-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #FFFDD0; z-index: 3000; 
+            background: #FFFDD0; z-index: 9999; 
             flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 25px;
         }
         .gentle-msg { font-size: 28px; font-weight: bold; color: #444; line-height: 1.5; margin-bottom: 30px; }
-        .countdown { font-size: 50px; font-weight: 900; color: var(--wa-green); margin-bottom: 30px; }
-        .btn-stop { background: #bbb; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-size: 20px; font-weight: bold; }
+        .countdown { font-size: 60px; font-weight: 900; color: var(--wa-green); margin-bottom: 30px; }
+        .btn-stop { background: #bbb; color: white; border: none; padding: 18px 35px; border-radius: 15px; font-size: 22px; font-weight: bold; cursor: pointer; }
 
+        /* 主介面 */
         .card { background: var(--card-white); border-radius: 26px; padding: 22px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin-bottom: 15px; width: calc(100% - 44px); }
-        .ai-bubble { font-size: 32px; border-left: 10px solid var(--primary-orange); padding-left: 15px; margin-bottom: 12px; font-weight: 900; color: #333; }
+        .ai-bubble { font-size: 32px; border-left: 10px solid var(--primary-orange); padding-left: 15px; margin-bottom: 12px; font-weight: 900; color: #333; line-height: 1.2; }
         
-        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 20px; border-radius: 18px; font-size: 24px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
+        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 22px; border-radius: 20px; font-size: 26px; font-weight: bold; margin-bottom: 15px; cursor: pointer; }
         .btn-wa-main { background: var(--wa-green) !important; }
         
-        input { font-size: 32px; padding: 15px; border-radius: 15px; border: 3px solid var(--accent-blue); text-align: center; width: 40%; margin-bottom: 10px; }
+        input { font-size: 32px; padding: 15px; border-radius: 15px; border: 3px solid var(--accent-blue); text-align: center; width: 42%; margin-bottom: 10px; }
         label { font-size: 18px; font-weight: bold; color: #666; display: block; margin-bottom: 5px; }
+
+        .settings-input { width: 90% !important; margin-bottom: 20px !important; }
     </style>
 </head>
 <body>
@@ -49,17 +52,17 @@
 
     <div id="home-page" class="page active">
         <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h1 style="color: var(--primary-orange); margin: 0; font-size: 30px;">溫暖守護</h1>
-            <div style="color: var(--primary-orange); font-weight: bold; border: 2px solid; padding: 5px 10px; border-radius: 10px; cursor: pointer;" onclick="showPage('settings-page')">⚙️ 設定</div>
+            <h1 style="color: var(--primary-orange); margin: 0; font-size: 32px;">溫暖守護</h1>
+            <div style="color: var(--primary-orange); font-weight: bold; border: 2.5px solid; padding: 6px 12px; border-radius: 12px; cursor: pointer; font-size: 18px;" onclick="showPage('settings-page')">⚙️ 設定中心</div>
         </div>
 
         <div class="card">
             <div id="ai-msg" class="ai-bubble">早晨呀！</div>
-            <div id="last-record" style="color: var(--primary-orange); font-weight: bold; font-size: 20px;">載入中...</div>
+            <div id="last-record" style="color: var(--primary-orange); font-weight: bold; font-size: 22px; background: #FFF9E6; padding: 10px; border-radius: 10px; display: inline-block;">載入中...</div>
         </div>
 
         <div class="card" style="text-align: center;">
-            <div style="display:flex; justify-content: space-around;">
+            <div style="display:flex; justify-content: space-around; margin-bottom: 10px;">
                 <div><label>上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
                 <div><label>下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
             </div>
@@ -70,88 +73,116 @@
 
     <div id="settings-page" class="page">
         <div class="card">
-            <h2 onclick="showPage('home-page')" style="cursor: pointer;">⬅️ 返回</h2>
-            <p>您的稱呼：<br><input type="text" id="u-name" style="width:90%;"></p>
-            <p>家人 WhatsApp：<br><input type="tel" id="family-tel" style="width:90%;"></p>
-            <p>提醒時間：<br><input type="time" id="deadline-time" style="width:90%;"></p>
-            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存</button>
+            <h2 onclick="showPage('home-page')" style="cursor: pointer; color: var(--primary-orange);">⬅️ 返回主頁</h2>
+            <hr>
+            <label>點樣稱呼您？</label>
+            <input type="text" id="u-name" class="settings-input" placeholder="例如：阿娟">
+            
+            <label>家人 WhatsApp 電話</label>
+            <input type="tel" id="family-tel" class="settings-input" placeholder="例如：91234567">
+            
+            <label>每日 Check-in 期限</label>
+            <input type="time" id="deadline-time" class="settings-input">
+            
+            <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存設定</button>
         </div>
     </div>
 
     <script>
-        let timer = null;
-        let isAlerting = false;
+        let countdownValue = 5;
+        let countdownInterval = null;
+        let isAlertShowing = false;
 
         function showPage(p) { 
-            document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
+            document.querySelectorAll('.page').forEach(el => el.classList.remove('active')); 
             document.getElementById(p).classList.add('active'); 
+            if (p === 'settings-page') {
+                const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+                document.getElementById('u-name').value = s.name || '';
+                document.getElementById('family-tel').value = s.familyTel || '';
+                document.getElementById('deadline-time').value = s.deadline || '12:00';
+            }
             updateStats();
         }
 
         function saveSets() { 
-            localStorage.setItem('warm_sets', JSON.stringify({
+            const s = {
                 name: document.getElementById('u-name').value, 
                 familyTel: document.getElementById('family-tel').value,
                 deadline: document.getElementById('deadline-time').value
-            })); 
+            };
+            localStorage.setItem('warm_sets', JSON.stringify(s)); 
+            alert("設定已儲存！");
             showPage('home-page'); 
         }
 
         function logBP() {
-            const s = document.getElementById('sys').value, d = document.getElementById('dia').value;
-            if(!s || !d) return alert("請輸入數值");
+            const sys = document.getElementById('sys').value;
+            const dia = document.getElementById('dia').value;
+            if(!sys || !dia) { alert("請填好數值先量呀！"); return; }
+            
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            logs.push({sys: s, dia: d, d: Date.now()});
+            logs.push({ sys: sys, dia: dia, d: Date.now() });
             localStorage.setItem('warm_logs', JSON.stringify(logs));
-            document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
+            
+            document.getElementById('sys').value = '';
+            document.getElementById('dia').value = '';
             alert("記好喇！❤️");
-            stopSafetyAlert();
+            
+            if(isAlertShowing) stopSafetyAlert();
             updateStats();
         }
 
         function updateStats() {
-            let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            let today = new Date().toDateString();
-            let hasToday = logs.some(l => new Date(l.d).toDateString() === today);
+            const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            const todayStr = new Date().toDateString();
+            const hasToday = logs.some(l => new Date(l.d).toDateString() === todayStr);
             
-            if (!hasToday && !isAlerting) {
-                let now = new Date();
-                let cur = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
-                if (cur >= (s.deadline || "12:00")) startSafetyAlert();
+            // 檢查是否需要彈出提醒
+            const now = new Date();
+            const curTime = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
+            const deadline = s.deadline || "12:00";
+
+            // 如果今日未紀錄、目前超過期限、且現在沒在彈窗、且這節 session 沒被取消過
+            if (!hasToday && curTime >= deadline && !isAlertShowing && !sessionStorage.getItem('alert_cancelled')) {
+                startSafetyAlert();
             }
 
-            const last = logs[logs.length-1];
+            const last = logs[logs.length - 1];
             document.getElementById('last-record').innerText = last ? `上次：${last.sys}/${last.dia}` : "尚未紀錄";
             document.getElementById('ai-msg').innerText = hasToday ? `做得好，${s.name || ''}！` : `早晨，${s.name || ''}！`;
         }
 
         function startSafetyAlert() {
-            isAlerting = true;
+            isAlertShowing = true;
             document.getElementById('safety-overlay').style.display = 'flex';
-            let sec = 5;
-            timer = setInterval(() => {
-                sec--;
-                document.getElementById('timer-num').innerText = sec;
-                if (sec <= 0) {
-                    clearInterval(timer);
-                    sendWA();
+            countdownValue = 5;
+            document.getElementById('timer-num').innerText = countdownValue;
+
+            countdownInterval = setInterval(() => {
+                countdownValue--;
+                document.getElementById('timer-num').innerText = countdownValue;
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    executeSend();
                 }
             }, 1000);
         }
 
         function stopSafetyAlert() {
-            isAlerting = false;
-            clearInterval(timer);
+            isAlertShowing = false;
+            clearInterval(countdownInterval);
             document.getElementById('safety-overlay').style.display = 'none';
-            document.getElementById('timer-num').innerText = "5";
+            // 標記為本次開啟 App 期間不再自動彈出
+            sessionStorage.setItem('alert_cancelled', 'true');
         }
 
-        function sendWA() {
+        function executeSend() {
             const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            // 精簡後的訊息
             const msg = `今日${s.name || '長輩'}忙緊，遲啲量，放心！❤️`;
-            window.open(`https://wa.me/${s.familyTel || ''}?text=${encodeURIComponent(msg)}`);
+            const tel = s.familyTel || '';
+            window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
             stopSafetyAlert();
         }
 
@@ -159,17 +190,19 @@
             const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
             const last = logs[logs.length-1];
-            if(!last) return;
+            if(!last) { alert("仲未有紀錄喎！"); return; }
             const msg = `${s.name || '長輩'}今日血壓：${last.sys}/${last.dia}，放心！`;
             window.open(`https://wa.me/${s.familyTel || ''}?text=${encodeURIComponent(msg)}`);
         }
 
-        // 初始化
-        let saved = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-        document.getElementById('u-name').value = saved.name || '';
-        document.getElementById('family-tel').value = saved.familyTel || '';
-        document.getElementById('deadline-time').value = saved.deadline || '12:00';
+        // 初始化讀取
+        const initSets = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+        if(!initSets.deadline) {
+            localStorage.setItem('warm_sets', JSON.stringify({name:'', familyTel:'', deadline:'12:00'}));
+        }
+
         updateStats();
+        // 每 30 秒自動檢查一次
         setInterval(updateStats, 30000);
     </script>
 </body>
