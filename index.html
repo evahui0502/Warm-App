@@ -3,14 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <title>溫暖守護</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="溫暖守護">
     <meta name="theme-color" content="#FF8C00">
-    
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/822/822102.png">
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/822/822102.png">
 
@@ -19,48 +16,37 @@
 
     <style>
         :root { --bg-color: #FFFDD0; --primary-orange: #FF8C00; --accent-blue: #87CEEB; --sos-red: #FF4B2B; --card-white: #FFFFFF; --warn-red: #d32f2f; }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background-color: var(--bg-color); margin: 0; padding: 15px; 
-            display: flex; flex-direction: column; align-items: center;
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         .page { display: none; width: 100%; max-width: 450px; flex-direction: column; }
         .active { display: flex; }
-        
-        .card { background: var(--card-white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; }
-        .ai-bubble { font-size: 22px; border-left: 6px solid var(--primary-orange); padding-left: 12px; margin-bottom: 10px; font-weight: bold; color: #444; }
-        
+        .card { background: var(--card-white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; width: calc(100% - 40px); }
+        .ai-bubble { font-size: 22px; border-left: 6px solid var(--primary-orange); padding-left: 12px; margin-bottom: 10px; font-weight: bold; color: #444; line-height: 1.4; }
         .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .input-group { flex: 1; display: flex; flex-direction: column; }
         .input-group label { font-size: 16px; margin-bottom: 8px; font-weight: bold; color: #555; }
         input { font-size: 26px; padding: 12px; border-radius: 12px; border: 2px solid var(--accent-blue); text-align: center; width: 85%; align-self: center; }
-        
-        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 22px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
-        .btn-report { background: white; border: 2px solid var(--primary-orange); color: var(--primary-orange); padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; flex: 1; }
-
+        .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 20px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
+        .btn-wa { background: #25D366 !important; margin-bottom: 20px; }
+        .btn-report { background: white; border: 2px solid var(--primary-orange); color: var(--primary-orange); padding: 15px; border-radius: 12px; font-size: 17px; font-weight: bold; flex: 1; }
         #report-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        #report-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; }
-        
+        #report-content { background: white; width: 85%; max-width: 400px; padding: 20px; border-radius: 20px; }
         .sos-btn { position: fixed; bottom: 25px; right: 20px; width: 95px; height: 95px; background: var(--sos-red); border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 900; z-index: 100; touch-action: none; box-shadow: 0 8px 20px rgba(255,75,43,0.4); }
         .circle { stroke: white; stroke-dasharray: 283; stroke-dashoffset: 283; transition: 0.1s; }
-
-        /* 異常警示樣式 */
         .warning-text { color: var(--warn-red); font-weight: bold; font-size: 14px; margin-top: 5px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="home-page" class="page active">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px; width: 100%;">
             <h2 style="color: var(--primary-orange); margin: 0;">溫暖守護</h2>
             <span style="font-size:32px; cursor:pointer;" onclick="showPage('settings-page')">⚙️</span>
         </div>
 
         <div class="card">
-            <div id="ai-msg" class="ai-bubble">早晨呀！今日記低血壓數據未？</div>
-            <div id="quick-stats" style="color:#888; font-size: 16px;">本週已紀錄 0 次數據</div>
+            <div id="ai-msg" class="ai-bubble">早晨呀！</div>
+            <div id="last-record-time" style="color:#FF8C00; font-weight:bold; font-size:16px; margin-bottom:5px;"></div>
+            <div id="quick-stats" style="color:#888; font-size: 14px;">本週已紀錄 0 次數據</div>
         </div>
 
         <div class="card">
@@ -90,33 +76,20 @@
             <h2 style="margin: 0 0 0 15px;">設定中心</h2>
         </div>
         <div class="card">
-            <div style="margin-bottom:15px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">您的稱呼</label>
-                <input type="text" id="u-name" style="width:95%; font-size:18px;" placeholder="例如：陳伯">
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">家人接收報告 Email</label>
-                <input type="email" id="f-email" style="width:95%; font-size:18px;" placeholder="family@mail.com">
-            </div>
-            <hr>
-            <div style="margin-bottom:15px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">緊急聯絡人姓名 (Emergency Contact)</label>
-                <input type="text" id="e-contact-name" style="width:95%; font-size:18px;" placeholder="例如：大仔">
-            </div>
-            <div style="margin-bottom:15px;">
-                <label style="display:block; margin-bottom:5px; font-weight:bold;">緊急求助電話</label>
-                <input type="tel" id="sos-tel" style="width:95%; font-size:18px;" placeholder="999">
-            </div>
+            <div style="margin-bottom:15px;"><label>您的稱呼</label><input type="text" id="u-name" style="width:90%;"></div>
+            <div style="margin-bottom:15px;"><label>家人 Email</label><input type="email" id="f-email" style="width:90%;"></div>
+            <div style="margin-bottom:15px;"><label>緊急聯絡人姓名</label><input type="text" id="e-contact-name" style="width:90%;"></div>
+            <div style="margin-bottom:15px;"><label>緊急求助電話</label><input type="tel" id="sos-tel" style="width:90%;"></div>
             <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存設定</button>
         </div>
     </div>
 
     <div id="report-overlay">
         <div id="report-content">
-            <h3 id="report-title" style="text-align:center; color: var(--primary-orange); margin-top:0;">健康趨勢</h3>
+            <h3 id="report-title" style="text-align:center; color: var(--primary-orange); margin:0 0 10px 0;">健康趨勢</h3>
             <canvas id="bpChart" width="400" height="300"></canvas>
-            <div id="report-text" style="margin-top:15px; font-size:14px; white-space:pre-wrap; max-height:120px; overflow-y:auto; background:#f5f5f5; padding:8px; border-radius:8px;"></div>
-            <button class="btn-main" style="background:var(--primary-orange); margin-top:15px;" onclick="downloadPDF()">📥 發送 PDF</button>
+            <div id="report-text" style="margin-top:10px; font-size:13px; white-space:pre-wrap; max-height:100px; overflow-y:auto; background:#f5f5f5; padding:8px; border-radius:8px;"></div>
+            <button class="btn-main btn-wa" onclick="shareWhatsApp()">💬 WhatsApp 分享數據</button>
             <button class="btn-main" style="background:#888" onclick="closeReport()">返回</button>
         </div>
     </div>
@@ -128,23 +101,31 @@
     <script>
         let myChart = null;
 
+        function formatFriendlyTime(timestamp) {
+            if (!timestamp) return "尚未有紀錄";
+            const now = new Date();
+            const date = new Date(timestamp);
+            const diffDays = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(date.getFullYear(), date.getMonth(), date.getDate())) / 86400000);
+            
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (diffDays === 0) return `今日 ${timeStr}`;
+            if (diffDays === 1) return `尋日 ${timeStr}`;
+            if (diffDays === 2) return `前日 ${timeStr}`;
+            return `${date.getMonth() + 1}月${date.getDate()}日 ${timeStr}`;
+        }
+
         function showPage(p) { 
             document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
             document.getElementById(p).classList.add('active'); 
             if(p==='settings-page') loadSets(); 
+            updateStats();
         }
 
         function saveSets() { 
-            const sets = {
-                email: document.getElementById('f-email').value,
-                name: document.getElementById('u-name').value,
-                eName: document.getElementById('e-contact-name').value,
-                tel: document.getElementById('sos-tel').value || '999'
-            };
+            const sets = { email: document.getElementById('f-email').value, name: document.getElementById('u-name').value, eName: document.getElementById('e-contact-name').value, tel: document.getElementById('sos-tel').value || '999' };
             localStorage.setItem('warm_sets', JSON.stringify(sets)); 
             alert("設定已儲存！");
             showPage('home-page'); 
-            updateStats();
         }
 
         function loadSets() { 
@@ -158,75 +139,58 @@
         function logBP() {
             const sys = parseInt(document.getElementById('sys').value);
             const dia = parseInt(document.getElementById('dia').value);
-            const warnBox = document.getElementById('bp-warning');
-            
             if(!sys || !dia) return alert("請輸入數值");
             
-            // 異常檢測
-            if (sys >= 140 || dia >= 90) {
-                warnBox.style.display = 'block';
-                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                alert("提醒：血壓數值稍高，請坐低休息 15 分鐘後再量一次。");
-            } else {
-                warnBox.style.display = 'none';
-            }
+            document.getElementById('bp-warning').style.display = (sys >= 140 || dia >= 90) ? 'block' : 'none';
 
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             logs.push({t: '血壓', r: `${sys}/${dia}`, d: Date.now()});
             localStorage.setItem('warm_logs', JSON.stringify(logs));
             
-            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            document.getElementById('ai-msg').innerText = `記低咗喇${s.name || ''}！紀錄時間：${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-            
+            if(navigator.vibrate) navigator.vibrate(60);
             document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
             updateStats();
         }
 
         function updateStats() {
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
             let weekData = logs.filter(l=>l.d > Date.now()-7*86400000);
+            
             document.getElementById('quick-stats').innerText = `本週已紀錄 ${weekData.length} 次數據`;
+            const last = logs[logs.length - 1];
+            if (last) {
+                document.getElementById('last-record-time').innerText = `最後紀錄：${formatFriendlyTime(last.d)} (${last.r})`;
+                document.getElementById('ai-msg').innerText = `記低咗喇${s.name || ''}！`;
+            } else {
+                document.getElementById('ai-msg').innerText = `早晨呀${s.name || ''}！量咗血壓未？`;
+            }
         }
 
         function openReport(days) {
             const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const filtered = logs.filter(l => l.d > Date.now() - days*86400000);
             if(filtered.length === 0) return alert("未有數據。");
-
             document.getElementById('report-overlay').style.display = 'flex';
             const ctx = document.getElementById('bpChart').getContext('2d');
             if(myChart) myChart.destroy();
-            
-            myChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: filtered.map(l => new Date(l.d).toLocaleDateString()),
-                    datasets: [{
-                        label: '上壓', data: filtered.map(l => l.r.split('/')[0]),
-                        borderColor: '#FF4B2B', backgroundColor: 'rgba(255, 75, 43, 0.1)', fill: true, tension: 0.3
-                    }, {
-                        label: '下壓', data: filtered.map(l => l.r.split('/')[1]),
-                        borderColor: '#2196F3', backgroundColor: 'rgba(33, 150, 243, 0.1)', fill: true, tension: 0.3
-                    }]
-                }
-            });
-
-            let text = "歷史清單：\n";
-            filtered.forEach(l => text += `${new Date(l.d).toLocaleString('zh-HK')} : ${l.r}\n`);
-            document.getElementById('report-text').innerText = text;
+            myChart = new Chart(ctx, { type: 'line', data: { labels: filtered.map(l => new Date(l.d).toLocaleDateString()), datasets: [{ label: '上壓', data: filtered.map(l => l.r.split('/')[0]), borderColor: '#FF4B2B', fill: false }, { label: '下壓', data: filtered.map(l => l.r.split('/')[1]), borderColor: '#2196F3', fill: false }] } });
+            let text = "";
+            filtered.slice(-5).forEach(l => text += `${formatFriendlyTime(l.d)} : ${l.r}\n`);
+            document.getElementById('report-text').innerText = "最近 5 次紀錄：\n" + text;
         }
 
         function closeReport() { document.getElementById('report-overlay').style.display = 'none'; }
 
-        function downloadPDF() {
-            const element = document.getElementById('report-content');
+        function shareWhatsApp() {
+            const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            html2pdf().from(element).save().then(() => {
-                if(s.email) window.location.href = `mailto:${s.email}?subject=健康報告_${s.name || ''}&body=附件是最近的健康報告。`;
-            });
+            const last = logs[logs.length - 1];
+            if(!last) return;
+            const msg = `【溫暖守護】${s.name || '長輩'}健康報告\n最後紀錄：${formatFriendlyTime(last.d)}\n血壓：${last.r}\n\n大家放心！`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
         }
 
-        // SOS 功能
         const sos = document.getElementById('sos');
         let timer, start;
         sos.addEventListener('touchstart', (e) => {
@@ -234,13 +198,7 @@
             timer = setInterval(() => {
                 let p = (Date.now() - start) / 2000;
                 document.querySelector('.circle').style.strokeDashoffset = 283 - (Math.min(p, 1) * 283);
-                if(p >= 1) { 
-                    clearInterval(timer); 
-                    let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-                    let msg = s.eName ? `正在聯絡 ${s.eName}...` : "撥打求助電話...";
-                    alert(msg);
-                    window.location.href = `tel:${s.tel || '999'}`; 
-                }
+                if(p >= 1) { clearInterval(timer); let s = JSON.parse(localStorage.getItem('warm_sets') || '{}'); window.location.href = `tel:${s.tel || '999'}`; }
             }, 50);
         });
         sos.addEventListener('touchend', () => { clearInterval(timer); document.querySelector('.circle').style.strokeDashoffset = 283; });
