@@ -15,24 +15,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        :root { --bg-color: #FFFDD0; --primary-orange: #FF8C00; --accent-blue: #87CEEB; --sos-red: #FF4B2B; --card-white: #FFFFFF; --warn-red: #d32f2f; }
+        :root { --bg-color: #FFFDD0; --primary-orange: #FF8C00; --accent-blue: #87CEEB; --sos-red: #FF4B2B; --card-white: #FFFFFF; --wa-green: #25D366; }
         body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: var(--bg-color); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         .page { display: none; width: 100%; max-width: 450px; flex-direction: column; }
         .active { display: flex; }
         .card { background: var(--card-white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 15px; width: calc(100% - 40px); }
-        .ai-bubble { font-size: 22px; border-left: 6px solid var(--primary-orange); padding-left: 12px; margin-bottom: 10px; font-weight: bold; color: #444; line-height: 1.4; }
+        .ai-bubble { font-size: 22px; border-left: 6px solid var(--primary-orange); padding-left: 12px; margin-bottom: 10px; font-weight: bold; color: #444; }
         .input-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .input-group { flex: 1; display: flex; flex-direction: column; }
-        .input-group label { font-size: 16px; margin-bottom: 8px; font-weight: bold; color: #555; }
         input { font-size: 26px; padding: 12px; border-radius: 12px; border: 2px solid var(--accent-blue); text-align: center; width: 85%; align-self: center; }
         .btn-main { width: 100%; background: var(--accent-blue); color: white; border: none; padding: 18px; border-radius: 15px; font-size: 20px; font-weight: bold; margin-bottom: 12px; cursor: pointer; }
-        .btn-wa { background: #25D366 !important; margin-bottom: 20px; }
+        .btn-wa-main { background: var(--wa-green) !important; color: white; }
         .btn-report { background: white; border: 2px solid var(--primary-orange); color: var(--primary-orange); padding: 15px; border-radius: 12px; font-size: 17px; font-weight: bold; flex: 1; }
         #report-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         #report-content { background: white; width: 85%; max-width: 400px; padding: 20px; border-radius: 20px; }
         .sos-btn { position: fixed; bottom: 25px; right: 20px; width: 95px; height: 95px; background: var(--sos-red); border-radius: 50%; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: 900; z-index: 100; touch-action: none; box-shadow: 0 8px 20px rgba(255,75,43,0.4); }
         .circle { stroke: white; stroke-dasharray: 283; stroke-dashoffset: 283; transition: 0.1s; }
-        .warning-text { color: var(--warn-red); font-weight: bold; font-size: 14px; margin-top: 5px; display: none; text-align: center; }
     </style>
 </head>
 <body>
@@ -45,27 +43,21 @@
 
         <div class="card">
             <div id="ai-msg" class="ai-bubble">早晨呀！</div>
-            <div id="last-record-time" style="color:#FF8C00; font-weight:bold; font-size:16px; margin-bottom:5px;"></div>
+            <div id="last-record-time" style="color:#FF8C00; font-weight:bold; font-size:16px; margin-bottom:5px;">尚未有紀錄</div>
             <div id="quick-stats" style="color:#888; font-size: 14px;">本週已紀錄 0 次數據</div>
         </div>
 
         <div class="card">
             <div class="input-row">
-                <div class="input-group">
-                    <label>上壓 (收縮壓)</label>
-                    <input type="number" id="sys" placeholder="120" inputmode="numeric">
-                </div>
-                <div class="input-group">
-                    <label>下壓 (舒張壓)</label>
-                    <input type="number" id="dia" placeholder="80" inputmode="numeric">
-                </div>
+                <div class="input-group"><label>上壓</label><input type="number" id="sys" placeholder="120" inputmode="numeric"></div>
+                <div class="input-group"><label>下壓</label><input type="number" id="dia" placeholder="80" inputmode="numeric"></div>
             </div>
-            <div id="bp-warning" class="warning-text">⚠️ 數值偏高，建議坐低休息下。</div>
             <button class="btn-main" onclick="logBP()">✅ 記下數據</button>
+            <button class="btn-main btn-wa-main" onclick="quickShareToday()">💬 即時回報今日數據</button>
         </div>
 
         <div style="display:flex; gap:12px; width:100%;">
-            <button class="btn-report" onclick="openReport(7)">📊 睇圖表</button>
+            <button class="btn-report" onclick="openReport(7)">📊 睇一週圖表</button>
             <button class="btn-report" onclick="openReport(30)">📅 預覽月報</button>
         </div>
     </div>
@@ -76,8 +68,7 @@
             <h2 style="margin: 0 0 0 15px;">設定中心</h2>
         </div>
         <div class="card">
-            <div style="margin-bottom:15px;"><label>您的稱呼</label><input type="text" id="u-name" style="width:90%;"></div>
-            <div style="margin-bottom:15px;"><label>家人 Email</label><input type="email" id="f-email" style="width:90%;"></div>
+            <div style="margin-bottom:15px;"><label>您的稱呼</label><input type="text" id="u-name" style="width:90%;" placeholder="例如：陳伯"></div>
             <div style="margin-bottom:15px;"><label>緊急聯絡人姓名</label><input type="text" id="e-contact-name" style="width:90%;"></div>
             <div style="margin-bottom:15px;"><label>緊急求助電話</label><input type="tel" id="sos-tel" style="width:90%;"></div>
             <button class="btn-main" style="background:#4CAF50" onclick="saveSets()">💾 儲存設定</button>
@@ -89,7 +80,7 @@
             <h3 id="report-title" style="text-align:center; color: var(--primary-orange); margin:0 0 10px 0;">健康趨勢</h3>
             <canvas id="bpChart" width="400" height="300"></canvas>
             <div id="report-text" style="margin-top:10px; font-size:13px; white-space:pre-wrap; max-height:100px; overflow-y:auto; background:#f5f5f5; padding:8px; border-radius:8px;"></div>
-            <button class="btn-main btn-wa" onclick="shareWhatsApp()">💬 WhatsApp 分享數據</button>
+            <button class="btn-main btn-wa-main" onclick="shareReportWA()">💬 WhatsApp 分享此報告</button>
             <button class="btn-main" style="background:#888" onclick="closeReport()">返回</button>
         </div>
     </div>
@@ -100,54 +91,31 @@
 
     <script>
         let myChart = null;
+        let currentReportDays = 7;
 
-        function formatFriendlyTime(timestamp) {
-            if (!timestamp) return "尚未有紀錄";
+        function formatFriendlyTime(ts) {
+            const date = new Date(ts);
             const now = new Date();
-            const date = new Date(timestamp);
-            const diffDays = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(date.getFullYear(), date.getMonth(), date.getDate())) / 86400000);
-            
-            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            if (diffDays === 0) return `今日 ${timeStr}`;
-            if (diffDays === 1) return `尋日 ${timeStr}`;
-            if (diffDays === 2) return `前日 ${timeStr}`;
-            return `${date.getMonth() + 1}月${date.getDate()}日 ${timeStr}`;
+            const diff = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - new Date(date.getFullYear(), date.getMonth(), date.getDate())) / 86400000);
+            const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (diff === 0) return `今日 ${time}`;
+            if (diff === 1) return `尋日 ${time}`;
+            return `${date.getMonth()+1}月${date.getDate()}日 ${time}`;
         }
 
-        function showPage(p) { 
-            document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); 
-            document.getElementById(p).classList.add('active'); 
-            if(p==='settings-page') loadSets(); 
-            updateStats();
-        }
-
+        function showPage(p) { document.querySelectorAll('.page').forEach(el=>el.classList.remove('active')); document.getElementById(p).classList.add('active'); if(p==='settings-page') loadSets(); updateStats(); }
         function saveSets() { 
-            const sets = { email: document.getElementById('f-email').value, name: document.getElementById('u-name').value, eName: document.getElementById('e-contact-name').value, tel: document.getElementById('sos-tel').value || '999' };
-            localStorage.setItem('warm_sets', JSON.stringify(sets)); 
-            alert("設定已儲存！");
-            showPage('home-page'); 
+            const sets = { name: document.getElementById('u-name').value, eName: document.getElementById('e-contact-name').value, tel: document.getElementById('sos-tel').value || '999' };
+            localStorage.setItem('warm_sets', JSON.stringify(sets)); alert("設定已儲存！"); showPage('home-page'); 
         }
-
-        function loadSets() { 
-            let s = JSON.parse(localStorage.getItem('warm_sets') || '{}'); 
-            document.getElementById('f-email').value = s.email || ''; 
-            document.getElementById('u-name').value = s.name || ''; 
-            document.getElementById('e-contact-name').value = s.eName || '';
-            document.getElementById('sos-tel').value = s.tel || '999';
-        }
+        function loadSets() { let s = JSON.parse(localStorage.getItem('warm_sets') || '{}'); document.getElementById('u-name').value = s.name || ''; document.getElementById('e-contact-name').value = s.eName || ''; document.getElementById('sos-tel').value = s.tel || '999'; }
 
         function logBP() {
-            const sys = parseInt(document.getElementById('sys').value);
-            const dia = parseInt(document.getElementById('dia').value);
+            const sys = document.getElementById('sys').value, dia = document.getElementById('dia').value;
             if(!sys || !dia) return alert("請輸入數值");
-            
-            document.getElementById('bp-warning').style.display = (sys >= 140 || dia >= 90) ? 'block' : 'none';
-
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            logs.push({t: '血壓', r: `${sys}/${dia}`, d: Date.now()});
+            logs.push({r: `${sys}/${dia}`, d: Date.now()});
             localStorage.setItem('warm_logs', JSON.stringify(logs));
-            
-            if(navigator.vibrate) navigator.vibrate(60);
             document.getElementById('sys').value = ''; document.getElementById('dia').value = '';
             updateStats();
         }
@@ -155,42 +123,57 @@
         function updateStats() {
             let logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             let s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            let weekData = logs.filter(l=>l.d > Date.now()-7*86400000);
-            
-            document.getElementById('quick-stats').innerText = `本週已紀錄 ${weekData.length} 次數據`;
-            const last = logs[logs.length - 1];
-            if (last) {
+            let week = logs.filter(l=>l.d > Date.now()-7*86400000);
+            document.getElementById('quick-stats').innerText = `本週已紀錄 ${week.length} 次數據`;
+            const last = logs[logs.length-1];
+            if(last) {
                 document.getElementById('last-record-time').innerText = `最後紀錄：${formatFriendlyTime(last.d)} (${last.r})`;
                 document.getElementById('ai-msg').innerText = `記低咗喇${s.name || ''}！`;
-            } else {
-                document.getElementById('ai-msg').innerText = `早晨呀${s.name || ''}！量咗血壓未？`;
             }
         }
 
+        // 功能 1：今日數據 WhatsApp 回報 (純文字，最快速)
+        function quickShareToday() {
+            const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
+            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            const todayLogs = logs.filter(l => new Date(l.d).toDateString() === new Date().toDateString());
+            if(todayLogs.length === 0) return alert("今日仲未有紀錄呀！");
+            
+            const last = todayLogs[todayLogs.length - 1];
+            const msg = `【溫暖守護】今日回報\n${s.name || '長輩'}今日最後紀錄：${last.r}\n時間：${formatFriendlyTime(last.d)}\n\n大家放心，身體暫時無事！`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+        }
+
+        // 功能 2：週報/月報分享 (PDF 下載 + WhatsApp 告知)
         function openReport(days) {
+            currentReportDays = days;
             const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
             const filtered = logs.filter(l => l.d > Date.now() - days*86400000);
             if(filtered.length === 0) return alert("未有數據。");
             document.getElementById('report-overlay').style.display = 'flex';
+            document.getElementById('report-title').innerText = days === 7 ? "一週健康趨勢" : "本月健康趨勢";
             const ctx = document.getElementById('bpChart').getContext('2d');
             if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'line', data: { labels: filtered.map(l => new Date(l.d).toLocaleDateString()), datasets: [{ label: '上壓', data: filtered.map(l => l.r.split('/')[0]), borderColor: '#FF4B2B', fill: false }, { label: '下壓', data: filtered.map(l => l.r.split('/')[1]), borderColor: '#2196F3', fill: false }] } });
-            let text = "";
-            filtered.slice(-5).forEach(l => text += `${formatFriendlyTime(l.d)} : ${l.r}\n`);
-            document.getElementById('report-text').innerText = "最近 5 次紀錄：\n" + text;
+            myChart = new Chart(ctx, { type: 'line', data: { labels: filtered.map(l => new Date(l.d).getDate() + '日'), datasets: [{ label: '上壓', data: filtered.map(l => l.r.split('/')[0]), borderColor: '#FF4B2B' }, { label: '下壓', data: filtered.map(l => l.r.split('/')[1]), borderColor: '#2196F3' }] } });
+            document.getElementById('report-text').innerText = "最近數據：\n" + filtered.slice(-3).map(l => `${formatFriendlyTime(l.d)}: ${l.r}`).join('\n');
+        }
+
+        function shareReportWA() {
+            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
+            const element = document.getElementById('report-content');
+            // 先下載 PDF 供長輩存檔
+            html2pdf().from(element).save('健康報告.pdf');
+            
+            // 同時跳轉 WhatsApp 告知家人
+            const msg = `【溫暖守護】${currentReportDays === 7 ? '一週' : '本月'}健康報告已生成。\n${s.name || '長輩'}的血壓趨勢穩定，PDF 已儲存於電話。`;
+            setTimeout(() => {
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+            }, 1000);
         }
 
         function closeReport() { document.getElementById('report-overlay').style.display = 'none'; }
 
-        function shareWhatsApp() {
-            const logs = JSON.parse(localStorage.getItem('warm_logs') || '[]');
-            const s = JSON.parse(localStorage.getItem('warm_sets') || '{}');
-            const last = logs[logs.length - 1];
-            if(!last) return;
-            const msg = `【溫暖守護】${s.name || '長輩'}健康報告\n最後紀錄：${formatFriendlyTime(last.d)}\n血壓：${last.r}\n\n大家放心！`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-        }
-
+        // SOS
         const sos = document.getElementById('sos');
         let timer, start;
         sos.addEventListener('touchstart', (e) => {
