@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>溫暖守護</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root { --bg-color: #FFFDD0; --primary-orange: #FF8C00; --wa-green: #25D366; --gold: #FFD700; --card-white: #FFFFFF; }
@@ -13,9 +12,10 @@
         .page { display: none; width: 100%; max-width: 480px; margin: auto; flex-direction: column; }
         .active { display: flex; }
         
-        /* 榮譽勳章風格 */
-        .streak-badge { background: linear-gradient(135deg, var(--gold), #FFA500); color: #8B4513; padding: 8px 18px; border-radius: 50px; font-weight: 900; font-size: 18px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(255,215,0,0.3); align-self: flex-start; }
+        /* 🔥 金色勳章獎勵機制 */
+        .streak-badge { background: linear-gradient(135deg, var(--gold), #FFA500); color: #8B4513; padding: 8px 18px; border-radius: 50px; font-weight: 900; font-size: 18px; display: inline-flex; align-items: center; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(255,215,0,0.3); align-self: flex-start; }
         
+        /* 📊 經典卡片與UI佈局 (回歸15版) */
         .card { background: var(--card-white); border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 15px; position: relative; }
         .ai-bubble { font-size: 28px; border-left: 8px solid var(--primary-orange); padding-left: 12px; font-weight: bold; color: #333; line-height: 1.2; }
         
@@ -29,10 +29,13 @@
         input { font-size: 24px; padding: 10px; border-radius: 10px; border: 2px solid #ddd; text-align: center; width: 40%; }
         .full-input { width: 90% !important; margin-bottom: 15px; }
 
-        /* 圖表彈窗與右上角按鈕 */
+        /* 💬 圖表彈窗與功能按鈕 */
         #chart-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: rgba(0,0,0,0.9); flex-direction: column; align-items: center; justify-content: center; }
-        #report-capture-area { background: white; padding: 20px; width: 85%; border-radius: 15px; text-align: center; position: relative; }
-        .wa-icon-btn { position: absolute; top: 15px; right: 15px; background: var(--wa-green); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .modal-body { background: white; padding: 20px; width: 85%; border-radius: 15px; text-align: center; position: relative; }
+        .wa-top-btn { position: absolute; top: 10px; right: 10px; background: var(--wa-green); color: white; border: none; padding: 8px 12px; border-radius: 10px; font-weight: bold; cursor: pointer; z-index: 10; }
+        
+        /* 圖片生成覆蓋層 (確保分享成功) */
+        #img-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; border-radius: 15px; z-index: 100; flex-direction: column; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -78,17 +81,19 @@
     </div>
 
     <div id="chart-modal">
-        <div id="report-capture-area">
-            <button class="wa-icon-btn" onclick="captureAndShare()" title="發送 WhatsApp">💬</button>
+        <div class="modal-body">
+            <button class="wa-top-btn" onclick="makeImage()">傳送 WhatsApp</button>
             
             <h3 id="report-title" style="margin:5px; color:var(--primary-orange); padding-right: 40px;">健康報告</h3>
-            <p id="report-subtitle" style="font-size:14px; margin:0; margin-bottom: 10px;"></p>
             <canvas id="healthChart"></canvas>
-            <p style="font-size:12px; color:#999; margin-top:10px;">由《溫暖守護》App 產生</p>
+            
+            <div id="img-overlay">
+                <p style="color:red; font-weight:bold; font-size:20px; margin-bottom:10px;">👇 長按圖片傳送給家人</p>
+                <img id="out-img" style="width:100%; border:2px solid var(--wa-green); border-radius:10px; max-height: 60vh; object-fit: contain;">
+                <button class="btn-main" style="background:#666; width:80%; margin-top:15px; font-size:18px;" onclick="hideOverlay()">返回修改</button>
+            </div>
         </div>
-        
-        <p style="color:white; font-size:14px; margin-top:15px;">點擊右上角綠色按鈕發送 WhatsApp</p>
-        <button class="btn-main" style="width:85%; background:#666; margin-top:5px;" onclick="closeChart()">關閉</button>
+        <button class="btn-main" style="width:85%; background:#666; margin-top:15px;" onclick="closeChart()">關閉彈窗</button>
     </div>
 
     <script>
@@ -119,7 +124,7 @@
         function doRecord() {
             const s = parseInt(document.getElementById('sys').value);
             const d = parseInt(document.getElementById('dia').value);
-            if(!s || !d) return alert("請輸入數字");
+            if(!s || !d) return alert("請先輸入血壓數字。❤️");
             let logs = getL();
             logs.push({ sys: s, dia: d, d: Date.now() });
             localStorage.setItem('warm_logs', JSON.stringify(logs));
@@ -134,18 +139,17 @@
             const s = getS();
             const last = logs[logs.length - 1];
             
-            // 1. 計算連續天數
+            // 計算連續紀錄天數
             let streak = 0;
-            let checkDate = new Date();
+            let check = new Date();
             const logDates = new Set(logs.map(l => new Date(l.d).toDateString()));
-            while(logDates.has(checkDate.toDateString())) {
+            while(logDates.has(check.toDateString())) {
                 streak++;
-                checkDate.setDate(checkDate.getDate() - 1);
+                check.setDate(check.getDate() - 1);
             }
             document.getElementById('streak-box').innerText = `🔥 連續紀錄 ${streak} 天`;
-
-            // 2. 更新首頁資訊
             document.getElementById('ai-msg').innerText = `早晨，${s.name}！`;
+            
             if(last) {
                 document.getElementById('last-info').innerText = `最新紀錄：${last.sys}/${last.dia}`;
                 const isH = (last.sys > 140 || last.dia > 90);
@@ -156,26 +160,23 @@
 
         function doWhatsApp() {
             const logs = getL();
-            const todayStr = new Date().toDateString();
-            const todayLogs = logs.filter(l => new Date(l.d).toDateString() === todayStr);
-            if(todayLogs.length === 0) return alert("今日仲未有紀錄喎！請先記下數據。❤️");
+            const todayLogs = logs.filter(l => new Date(l.d).toDateString() === new Date().toDateString());
+            if(todayLogs.length === 0) return alert("今日仲未有紀錄喎！");
             const latest = todayLogs[todayLogs.length - 1];
             const s = getS();
-            let warn = (latest.sys > 140 || latest.dia > 90) ? " (⚠️ 偏高，我會休息下再量)" : "";
+            let warn = (latest.sys > 140 || latest.dia > 90) ? " (⚠️ 數據偏高，我會休息下再量)" : "";
             const msg = `${s.name}最新血壓：${latest.sys}/${latest.dia}${warn}，放心！❤️`;
             window.open(`https://wa.me/${s.familyTel}?text=${encodeURIComponent(msg)}`);
         }
 
         function openChart(days) {
             const logs = getL();
-            const cutoff = Date.now() - (days * 86400000);
-            const data = logs.filter(l => l.d >= cutoff);
+            const data = logs.filter(l => l.d >= Date.now() - (days * 86400000));
             if(data.length < 1) return alert("數據不足，請多記幾天。");
 
             document.getElementById('chart-modal').style.display = 'flex';
-            const s = getS();
+            document.getElementById('img-overlay').style.display = 'none';
             document.getElementById('report-title').innerText = days === 7 ? "一週趨勢" : "月度趨勢";
-            document.getElementById('report-subtitle').innerText = `${s.name} 的數據報告`;
 
             const ctx = document.getElementById('healthChart').getContext('2d');
             if(myChart) myChart.destroy();
@@ -184,32 +185,24 @@
                 data: {
                     labels: data.map(l => new Date(l.d).toLocaleDateString('zh-HK', {month:'numeric', day:'numeric'})),
                     datasets: [
-                        { label: '上壓', data: data.map(l => l.sys), borderColor: '#FF4B2B', tension: 0.3 },
-                        { label: '下壓', data: data.map(l => l.dia), borderColor: '#87CEEB', tension: 0.3 }
+                        { label: '上壓', data: data.map(l => l.sys), borderColor: '#FF4B2B', tension: 0.3, fill: false },
+                        { label: '下壓', data: data.map(l => l.dia), borderColor: '#87CEEB', tension: 0.3, fill: false }
                     ]
                 },
-                options: { animation: false }
+                options: { animation: false, responsive: true, devicePixelRatio: 2 }
             });
         }
 
-        function captureAndShare() {
-            const s = getS();
-            const area = document.querySelector("#report-capture-area");
-            
-            // 生成圖片並引導分享
-            html2canvas(area, { scale: 2 }).then(canvas => {
-                const imgData = canvas.toDataURL("image/png");
-                const link = document.createElement('a');
-                link.href = imgData;
-                link.download = `健康報告.png`;
-                link.click();
-                
-                alert("報告圖片已下載到相簿！現在將開啟 WhatsApp，請從相簿選擇圖片傳給家人。");
-                window.open(`https://wa.me/${s.familyTel}?text=${encodeURIComponent("這是我的健康趨勢報告。")}`);
-            });
+        function makeImage() {
+            // 直接獲取圖表畫布，轉化為可分享圖片
+            const base64 = myChart.toBase64Image();
+            document.getElementById('out-img').src = base64;
+            document.getElementById('img-overlay').style.display = 'flex';
         }
 
+        function hideOverlay() { document.getElementById('img-overlay').style.display = 'none'; }
         function closeChart() { document.getElementById('chart-modal').style.display = 'none'; }
+
         ui();
     </script>
 </body>
